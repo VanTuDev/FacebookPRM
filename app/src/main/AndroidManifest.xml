@@ -23,10 +23,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PostActivity" />
-        <activity android:name=".Adapter.ChatActivity" />
-
-
+        <activity android:name=".Activity.ChatActivity" />
+        <activity android:name=".Activity.RegisterActivity" />
+        <activity android:name=".Activity.MenuActivity" />
         <!-- Khai báo HomeActivity -->
         <activity
             android:name=".Activity.HomeActivity"

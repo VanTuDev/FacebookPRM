@@ -1,4 +1,4 @@
-package com.example.fb_v2.Adapter;
+package com.example.fb_v2.Activity;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

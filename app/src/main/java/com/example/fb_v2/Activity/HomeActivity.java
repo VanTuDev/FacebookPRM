@@ -1,3 +1,5 @@
+// HomeActivity.java
+
 package com.example.fb_v2.Activity;
 
 import android.content.Intent;
@@ -12,9 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.fb_v2.Adapter.ChatActivity;
+
+import com.example.fb_v2.Adapter.PostAdapter;
 import com.example.fb_v2.Model.Post;
-import com.example.fb_v2.Model.User;
 import com.example.fb_v2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
@@ -69,7 +71,9 @@ public class HomeActivity extends AppCompatActivity {
                 showNotificationDialog();
                 return true;
             } else if (itemId == R.id.navigation_menu) {
-                // Handle menu action
+                // Navigate to MenuActivity
+                Intent intent = new Intent(HomeActivity.this, MenuActivity.class);
+                startActivity(intent);
                 return true;
             }
 

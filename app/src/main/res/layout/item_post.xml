@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:layout_height="wrap_content"
+    android:background="#121212"
     android:fillViewport="true"
     android:scrollbars="none"> <!-- Hide the scrollbar -->
 
@@ -18,26 +18,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="#333334"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:background="#FFFFFF"
-            android:layout_marginBottom="16dp"> <!-- Reduced spacing between posts -->
+            android:padding="16dp"> <!-- Reduced spacing between posts -->
 
             <!-- Post Header (User profile and name) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/postUserProfileImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/avata"
+                    android:background="@drawable/circle_shape"
                     android:contentDescription="User Profile Image"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/circle_shape" />
+                    android:src="@drawable/avata" />
 
                 <TextView
                     android:id="@+id/postUserName"
@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="User Name"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="This is a sample post text."
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
             <!-- Post Image -->
@@ -90,8 +90,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="25 likes"
-                    android:textColor="#000"
+                    android:text="25"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp" />
 
                 <ImageView
@@ -101,15 +101,15 @@
                     android:layout_marginStart="16dp"
                     android:contentDescription="Comment Icon"
                     android:src="@drawable/ic_comment"
-                    app:tint="#000000" />
+                    app:tint="#FFFFFF" />
 
                 <TextView
                     android:id="@+id/commentCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="10 comments"
-                    android:textColor="#000"
+                    android:text="10"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
