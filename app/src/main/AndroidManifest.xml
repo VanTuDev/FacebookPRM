@@ -12,28 +12,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FB_V2"
         tools:targetApi="31">
-
+        <activity
+            android:name=".Activity.ScrollActivity"
+            android:theme="@style/FullScreen"
+            android:exported="false" />
         <!-- MainActivity khai báo với intent filter để ứng dụng có thể khởi chạy -->
         <activity
             android:name=".Activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".PostActivity" />
-        <activity android:name=".Adapter.ChatActivity" />
-
-
-        <!-- Khai báo HomeActivity -->
+        <activity android:name=".Adapter.ChatActivity" /> <!-- Khai báo HomeActivity -->
         <activity
             android:name=".Activity.HomeActivity"
             android:exported="true">
+
             <!-- Bạn có thể thêm intent filter nếu HomeActivity cần bắt bất kỳ hành động nào khác -->
         </activity>
-
     </application>
 
 </manifest>
