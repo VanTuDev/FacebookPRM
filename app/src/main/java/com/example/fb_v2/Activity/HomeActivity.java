@@ -64,10 +64,6 @@ public class HomeActivity extends AppCompatActivity {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private static final String CHANNEL_ID = "post_notifications";
 
-    private String getCurrentUser() {
-        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
-        return sharedPreferences.getString("current_user", "Guest");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +73,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // Initialize the database helper
         databasePost = new DatabasePost(this);
-        LinearLayout statusUpdateSection = findViewById(R.id.statusUpdateSection);
-        statusUpdateSection.setOnClickListener(v -> showStatusUpdateDialog());
 
         // Initialize RecyclerView for posts
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
@@ -87,6 +81,8 @@ public class HomeActivity extends AppCompatActivity {
         postAdapter = new PostAdapter(postList);
         postsRecyclerView.setAdapter(postAdapter);
 
+        LinearLayout statusUpdateSection = findViewById(R.id.statusUpdateSection);
+        statusUpdateSection.setOnClickListener(v -> showStatusUpdateDialog());
         // Initialize Notification Icon
         notificationIcon = findViewById(R.id.notificationIcon);
         notificationIcon.setOnClickListener(v -> showNotificationDialog());
@@ -135,8 +131,10 @@ public class HomeActivity extends AppCompatActivity {
         Button postButton = dialog.findViewById(R.id.postButton);
         selectedImageView = dialog.findViewById(R.id.selectedImageView);
 
+        // Set up image picker button
         selectImageButton.setOnClickListener(v -> openImagePicker());
 
+        // Set up post button
         postButton.setOnClickListener(v -> {
             String statusText = statusEditText.getText().toString().trim();
             String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
@@ -151,7 +149,6 @@ public class HomeActivity extends AppCompatActivity {
                             postList.add(new Post(currentUser, statusText, imageUriString, 0, 0));
                             postAdapter.notifyDataSetChanged();
                             dialog.dismiss();
-                            sendPostNotification(currentUser, statusText, imageUriString);
                         } else {
                             Toast.makeText(this, "Failed to post status", Toast.LENGTH_SHORT).show();
                         }
@@ -186,21 +183,25 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    private String getCurrentUser() {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        return sharedPreferences.getString("current_user", "Guest");
+    }
+
     // Method to load posts from database
     private List<Post> loadPosts() {
         List<Post> posts = new ArrayList<>();
         Cursor cursor = databasePost.getAllPosts();
 
-        // Kiểm tra nếu cursor không null và có dữ liệu
         if (cursor != null && cursor.moveToFirst()) {
             int userNameIndex = cursor.getColumnIndex(DatabasePost.COLUMN_USER_NAME);
             int contentIndex = cursor.getColumnIndex(DatabasePost.COLUMN_CONTENT);
             int imageUriIndex = cursor.getColumnIndex(DatabasePost.COLUMN_IMAGE_URI);
 
             do {
-                String userName = userNameIndex >= 0 ? cursor.getString(userNameIndex) : "Unknown User";
-                String content = contentIndex >= 0 ? cursor.getString(contentIndex) : "";
-                String imageUri = imageUriIndex >= 0 ? cursor.getString(imageUriIndex) : null;
+                String userName = cursor.getString(userNameIndex);
+                String content = cursor.getString(contentIndex);
+                String imageUri = cursor.getString(imageUriIndex);
 
                 posts.add(new Post(userName, content, imageUri, 0, 0));
             } while (cursor.moveToNext());

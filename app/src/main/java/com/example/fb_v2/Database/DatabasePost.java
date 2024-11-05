@@ -16,6 +16,8 @@ public class DatabasePost extends SQLiteOpenHelper {
     public static final String COLUMN_USER_NAME = "user_name";
     public static final String COLUMN_CONTENT = "content";
     public static final String COLUMN_IMAGE_URI = "image_uri";
+    public static final String COLUMN_LIKE_COUNT = "like_count";
+    public static final String COLUMN_COMMENT_COUNT = "comment_count";
 
     public DatabasePost(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,16 +25,15 @@ public class DatabasePost extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_POST_TABLE = "CREATE TABLE posts (...)";
-        db.execSQL(CREATE_POST_TABLE);
-
-        // Tạo bảng likes
-        String CREATE_LIKE_TABLE = "CREATE TABLE likes (" +
-                "postId INTEGER, " +
-                "userId INTEGER, " +
-                "isLiked INTEGER, " +
-                "PRIMARY KEY (postId, userId))";
-        db.execSQL(CREATE_LIKE_TABLE);
+        String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_USER_NAME + " TEXT, " +
+                COLUMN_CONTENT + " TEXT, " +
+                COLUMN_IMAGE_URI + " TEXT, " +
+                COLUMN_LIKE_COUNT + " INTEGER DEFAULT 0, " +
+                COLUMN_COMMENT_COUNT + " INTEGER DEFAULT 0" +
+                ")";
+        db.execSQL(CREATE_POSTS_TABLE);
     }
 
     @Override
