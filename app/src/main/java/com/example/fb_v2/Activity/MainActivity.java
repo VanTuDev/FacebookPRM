@@ -1,6 +1,7 @@
 package com.example.fb_v2.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private DatabaseUser db;
+
+    private void saveCurrentUser(String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("current_user", username);
+        editor.apply();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +66,10 @@ public class MainActivity extends AppCompatActivity {
             String usernameText = username.getText().toString().trim();
             String passwordText = password.getText().toString().trim();
 
-            Log.d(TAG, "Username: " + usernameText + ", Password: " + passwordText);
-
             if (usernameText.isEmpty() || passwordText.isEmpty()) {
                 showSnackbar(v, "Bạn phải nhập đầy đủ vào", toastError);
             } else if (db.checkUser(usernameText, passwordText)) {
+                saveCurrentUser(usernameText);  // Lưu tên người dùng hiện tại
                 showSnackbar(v, "Đăng nhập thành công", toastDone);
                 new Handler().postDelayed(() -> {
                     Intent intent = new Intent(MainActivity.this, HomeActivity.class);

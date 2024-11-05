@@ -2,38 +2,83 @@
 
 package com.example.fb_v2.Activity;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import com.bumptech.glide.request.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.example.fb_v2.Adapter.PostAdapter;
+import com.example.fb_v2.Database.DatabasePost;
 import com.example.fb_v2.Model.Post;
 import com.example.fb_v2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private DatabasePost databasePost;
     private RecyclerView postsRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
     private ImageView notificationIcon;
     private ImageView messengerIcon;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri selectedImageUri;
+    private ImageView selectedImageView;
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private static final String CHANNEL_ID = "post_notifications";
+
+    private String getCurrentUser() {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        return sharedPreferences.getString("current_user", "Guest");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        String currentUser = getCurrentUser();
+
+        // Initialize the database helper
+        databasePost = new DatabasePost(this);
+        LinearLayout statusUpdateSection = findViewById(R.id.statusUpdateSection);
+        statusUpdateSection.setOnClickListener(v -> showStatusUpdateDialog());
 
         // Initialize RecyclerView for posts
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
@@ -83,14 +128,139 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    // Sample method to load posts
+    private void showStatusUpdateDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_status_update);
+
+        EditText statusEditText = dialog.findViewById(R.id.statusEditText);
+        Button selectImageButton = dialog.findViewById(R.id.selectImageButton);
+        Button postButton = dialog.findViewById(R.id.postButton);
+        selectedImageView = dialog.findViewById(R.id.selectedImageView);
+
+        selectImageButton.setOnClickListener(v -> openImagePicker());
+
+        postButton.setOnClickListener(v -> {
+            String statusText = statusEditText.getText().toString().trim();
+            String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+            String currentUser = getCurrentUser();
+
+            if (!statusText.isEmpty() || selectedImageUri != null) {
+                executorService.execute(() -> {
+                    boolean isInserted = databasePost.insertPost(currentUser, statusText, imageUriString);
+                    runOnUiThread(() -> {
+                        if (isInserted) {
+                            Toast.makeText(this, "Status posted!", Toast.LENGTH_SHORT).show();
+                            postList.add(new Post(currentUser, statusText, imageUriString, 0, 0));
+                            postAdapter.notifyDataSetChanged();
+                            dialog.dismiss();
+                            sendPostNotification(currentUser, statusText, imageUriString);
+                        } else {
+                            Toast.makeText(this, "Failed to post status", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
+            } else {
+                Toast.makeText(this, "Please enter a status or select an image", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                selectedImageView.setImageBitmap(bitmap);
+                selectedImageView.setVisibility(View.VISIBLE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Method to load posts from database
     private List<Post> loadPosts() {
         List<Post> posts = new ArrayList<>();
-        posts.add(new Post("Văn Tú", "Nhà Hàng này tuyệt vời !, Đồ ăn ngon ", R.drawable.post1, 25, 10));
-        posts.add(new Post("Nguyễn An", "Đi suối nè anh em !!!!", R.drawable.post2, 15, 5));
-        posts.add(new Post("Minh Hoàng", "Thử một quán cafe mới hôm nay, view rất đẹp!", R.drawable.post3, 20, 8));
-        posts.add(new Post("Lê Hương", "Ngày hôm nay thật tuyệt vời!", R.drawable.post4, 30, 12));
+        Cursor cursor = databasePost.getAllPosts();
+
+        // Kiểm tra nếu cursor không null và có dữ liệu
+        if (cursor != null && cursor.moveToFirst()) {
+            int userNameIndex = cursor.getColumnIndex(DatabasePost.COLUMN_USER_NAME);
+            int contentIndex = cursor.getColumnIndex(DatabasePost.COLUMN_CONTENT);
+            int imageUriIndex = cursor.getColumnIndex(DatabasePost.COLUMN_IMAGE_URI);
+
+            do {
+                String userName = userNameIndex >= 0 ? cursor.getString(userNameIndex) : "Unknown User";
+                String content = contentIndex >= 0 ? cursor.getString(contentIndex) : "";
+                String imageUri = imageUriIndex >= 0 ? cursor.getString(imageUriIndex) : null;
+
+                posts.add(new Post(userName, content, imageUri, 0, 0));
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
         return posts;
+    }
+
+    @SuppressLint("NotificationPermission")
+    private void sendPostNotification(String userName, String content, String imageUri) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Post Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Notifications for new posts");
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        String notificationContent = "Bài đăng mới của " + userName + ": " + content;
+
+        // Tạo builder cho thông báo
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Bài đăng thành công")
+                .setContentText(notificationContent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(notificationContent))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true);
+
+        // Nếu có hình ảnh, tải ảnh và thêm vào thông báo
+        if (imageUri != null && !imageUri.isEmpty()) {
+            Glide.with(this)
+                    .asBitmap()
+                    .load(imageUri)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, Transition<? super Bitmap> transition) {
+                            builder.setStyle(new NotificationCompat.BigPictureStyle()
+                                    .bigPicture(resource)
+                                    .bigLargeIcon((Icon) null));
+
+                            // Hiển thị thông báo sau khi hình ảnh đã tải xong
+                            notificationManager.notify(1, builder.build());
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+                    });
+        } else {
+            // Nếu không có hình ảnh, chỉ hiển thị thông báo với nội dung văn bản
+            notificationManager.notify(1, builder.build());
+        }
     }
 
     // Method to show notification dialog
