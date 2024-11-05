@@ -42,13 +42,24 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     public class VideoViewHolder extends RecyclerView.ViewHolder{
         VideoView videoView;
-        TextView title, desc;
+        TextView title, desc, username;
+
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
 
             videoView = itemView.findViewById(R.id.videoView);
             title = itemView.findViewById(R.id.video_title);
             desc = itemView.findViewById(R.id.video_desc);
+            username = itemView.findViewById(R.id.user_name);
+
+            // Pause or resume video on tap
+            videoView.setOnClickListener(v -> {
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                } else {
+                    videoView.start();
+                }
+            });
         }
 
         public void SetVideoData(Video video){
