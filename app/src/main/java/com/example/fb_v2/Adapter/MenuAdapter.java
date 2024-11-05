@@ -7,18 +7,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.fb_v2.Model.MenuItems;
 import com.example.fb_v2.R;
-
 import java.util.List;
 
 public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
 
     private List<MenuItems> menuItems;
+    private OnItemClickListener listener;
 
     public MenuAdapter(List<MenuItems> menuItems) {
         this.menuItems = menuItems;
+    }
+
+    // Define the interface for click events
+    public interface OnItemClickListener {
+        void onItemClick(MenuItems item);
+    }
+
+    // Setter for the click listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,6 +42,13 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         MenuItems menuItem = menuItems.get(position);
         holder.icon.setImageResource(menuItem.getIconResId());
         holder.name.setText(menuItem.getName());
+
+        // Set a click listener on the entire item view
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(menuItem);
+            }
+        });
     }
 
     @Override
