@@ -1,4 +1,4 @@
-package com.example.fb_v2.Activity;
+package com.example.fb_v2.Adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
