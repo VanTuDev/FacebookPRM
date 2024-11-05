@@ -63,6 +63,8 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.navigation_video) {
                 // Handle video action
+                Intent intent = new Intent(HomeActivity.this, ScrollActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.navigation_friends) {
                 // Handle friends action
