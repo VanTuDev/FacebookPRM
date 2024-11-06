@@ -58,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     private List<Post> postList;
     private ImageView notificationIcon;
     private ImageView messengerIcon;
+    private ImageView mapIcon;
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri selectedImageUri;
     private ImageView selectedImageView;
@@ -94,6 +95,11 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        mapIcon = findViewById(R.id.mapIcon);
+        mapIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, MapsActivity.class);
+            startActivity(intent);
+        });
         // Initialize Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
