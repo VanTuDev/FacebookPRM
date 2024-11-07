@@ -23,9 +23,7 @@ public class Video {
     public String getDesc() {
         return desc;
     }
-
     public String getUsername() {return  username; }
-
     public int getAvatarUrl() {
         return avatarUrl;
     }

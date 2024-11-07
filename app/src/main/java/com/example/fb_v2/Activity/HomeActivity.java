@@ -38,21 +38,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
+import com.example.fb_v2.Adapter.NotificationAdapter;
 import com.example.fb_v2.Adapter.PostAdapter;
+import com.example.fb_v2.Database.DatabaseNotification;
 import com.example.fb_v2.Database.DatabasePost;
+import com.example.fb_v2.Model.Notification;
 import com.example.fb_v2.Model.Post;
 import com.example.fb_v2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HomeActivity extends AppCompatActivity {
 
     private DatabasePost databasePost;
+    private DatabaseNotification databaseNotification;
     private RecyclerView postsRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
@@ -74,6 +81,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Initialize the database helper
         databasePost = new DatabasePost(this);
+        databaseNotification = new DatabaseNotification(this);
 
         // Initialize RecyclerView for posts
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
@@ -109,6 +117,7 @@ public class HomeActivity extends AppCompatActivity {
                 // Already on Home, handle accordingly
                 return true;
             } else if (itemId == R.id.navigation_video) {
+                // Handle video action
                 Intent intent = new Intent(HomeActivity.this, ScrollActivity.class);
                 startActivity(intent);
                 return true;
@@ -146,10 +155,11 @@ public class HomeActivity extends AppCompatActivity {
         // Set up post button
         postButton.setOnClickListener(v -> {
             String statusText = statusEditText.getText().toString().trim();
+            String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
             String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
-            String currentUser = getCurrentUser();
+            String currentUser = getCurrentUser();  // Lấy tên người dùng hiện tại
 
-            if (!statusText.isEmpty() || selectedImageUri != null) {
+            if (!statusText.isEmpty()) {
                 executorService.execute(() -> {
                     boolean isInserted = databasePost.insertPost(currentUser, statusText, imageUriString);
                     runOnUiThread(() -> {
@@ -158,19 +168,24 @@ public class HomeActivity extends AppCompatActivity {
                             postList.add(new Post(currentUser, statusText, imageUriString, 0, 0));
                             postAdapter.notifyDataSetChanged();
                             dialog.dismiss();
+
+                            // Lưu vào bảng notifications
+                            Notification notification = new Notification(currentUser, statusText, currentTime);
+                            databaseNotification.insertNotification(notification);
+
+                            sendPostNotification(currentUser, statusText, imageUriString);
                         } else {
                             Toast.makeText(this, "Failed to post status", Toast.LENGTH_SHORT).show();
                         }
                     });
                 });
             } else {
-                Toast.makeText(this, "Please enter a status or select an image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please enter a status", Toast.LENGTH_SHORT).show();
             }
         });
 
         dialog.show();
     }
-
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
@@ -273,7 +288,7 @@ public class HomeActivity extends AppCompatActivity {
 
     // Method to show notification dialog
     private void showNotificationDialog() {
-        List<String> notifications = loadNotifications();
+        List<Notification> notifications = databaseNotification.getAllNotifications();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_notifications, null);
         RecyclerView recyclerView = dialogView.findViewById(R.id.notificationsRecyclerView);
@@ -288,45 +303,15 @@ public class HomeActivity extends AppCompatActivity {
     // Sample method to load notifications
     private List<String> loadNotifications() {
         List<String> notifications = new ArrayList<>();
-        notifications.add("Bạn có 5 lượt thích mới trên bài đăng của bạn.");
-        notifications.add("Nguyễn An đã bình luận: 'Tuyệt vời!'");
-        notifications.add("Minh Hoàng đã gửi cho bạn một tin nhắn mới.");
-        notifications.add("Lê Hương đã nhắc đến bạn trong một bình luận.");
+        List<Notification> notificationList = databaseNotification.getAllNotifications();
+
+        for (Notification notification : notificationList) {
+            String displayText = notification.getContent() + " at " + notification.getTime();
+            notifications.add(displayText);
+        }
+
         return notifications;
     }
 
-    // Adapter for displaying notifications
-    public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
-        private List<String> notificationList;
 
-        public NotificationAdapter(List<String> notificationList) {
-            this.notificationList = notificationList;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_notification, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.notificationText.setText(notificationList.get(position));
-        }
-
-        @Override
-        public int getItemCount() {
-            return notificationList.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            TextView notificationText;
-
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                notificationText = itemView.findViewById(R.id.notificationText);
-            }
-        }
-    }
 }

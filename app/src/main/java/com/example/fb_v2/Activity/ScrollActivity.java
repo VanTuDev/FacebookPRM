@@ -56,6 +56,7 @@ public class ScrollActivity extends AppCompatActivity {
         videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.g, "Dark", "This video is amazing!!!!!", "hoang", R.drawable.a7 ));
         videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.h, "Minecraft", "This video is amazing!!!!!", "hay", R.drawable.a8 ));
 
+
         videoAdapter = new VideoAdapter(videoList);
         viewPager2.setAdapter(videoAdapter);
 
@@ -78,3 +79,4 @@ public class ScrollActivity extends AppCompatActivity {
         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, isMuted);
     }
 }
+

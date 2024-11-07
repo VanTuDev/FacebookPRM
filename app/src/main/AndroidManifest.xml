@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.POST_OTIFICATIONS" tools:targetApi="33" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="33" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -24,12 +24,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+
         <!-- MainActivity khai báo với intent filter để ứng dụng có thể khởi chạy -->
         <activity
             android:name=".Activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -43,15 +45,14 @@
         <activity android:name=".Activity.ChatActivity" />
         <activity android:name=".Activity.RegisterActivity" />
         <activity android:name=".Activity.MenuActivity" />
-        <activity android:name=".Activity.FriendRequestsActivity"></activity>
+        <activity android:name=".Activity.FriendRequestsActivity"/>
 
-        <!-- Khai báo HomeActivity -->
         <activity
             android:name=".Activity.HomeActivity"
             android:exported="true">
+
             <!-- Bạn có thể thêm intent filter nếu HomeActivity cần bắt bất kỳ hành động nào khác -->
         </activity>
-
     </application>
 
 </manifest>
