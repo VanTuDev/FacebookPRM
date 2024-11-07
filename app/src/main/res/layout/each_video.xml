@@ -9,31 +9,40 @@
     <!-- Avatar ImageView -->
 
     <ImageView
-        android:id="@+id/avatar"
+
+        android:id="@+id/avatar_video"
+
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="Avatar"
         android:src="@drawable/avata"
+
+        android:background="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+
         app:layout_constraintBottom_toTopOf="@+id/video_title"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/user_name"
+        android:id="@+id/user_name_video"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="User Name"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/avatar"
+
+        app:layout_constraintStart_toEndOf="@+id/avatar_video"
+
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteY="619dp" />
 
     <VideoView
-        android:id="@+id/videoView"
+        android:id="@+id/video_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

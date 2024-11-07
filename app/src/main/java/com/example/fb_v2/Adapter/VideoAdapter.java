@@ -4,12 +4,11 @@ import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.fb_v2.Model.Video;
 import com.example.fb_v2.R;
 
@@ -43,15 +42,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     public class VideoViewHolder extends RecyclerView.ViewHolder{
         VideoView videoView;
         TextView title, desc, username;
-
+        ImageView avatar;
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            videoView = itemView.findViewById(R.id.videoView);
+            videoView = itemView.findViewById(R.id.video_view);
             title = itemView.findViewById(R.id.video_title);
             desc = itemView.findViewById(R.id.video_desc);
-            username = itemView.findViewById(R.id.user_name);
-
+            username = itemView.findViewById(R.id.user_name_video);
+            avatar = itemView.findViewById(R.id.avatar_video);
             // Pause or resume video on tap
             videoView.setOnClickListener(v -> {
                 if (videoView.isPlaying()) {
@@ -61,12 +60,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 }
             });
         }
-
         public void SetVideoData(Video video){
             title.setText(video.getTitle());
             desc.setText(video.getDesc());
             videoView.setVideoPath(video.getVideoUrl());
-
+            avatar.setImageResource(video.getAvatarUrl());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {

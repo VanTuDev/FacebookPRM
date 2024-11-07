@@ -47,14 +47,15 @@ public class ScrollActivity extends AppCompatActivity {
         ImageButton backBtn = findViewById(R.id.btnBack);
         muteBtn = findViewById(R.id.btnMute);
 
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.a, "New Title", "This video is amazing!!!!!", "Vantu"));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.b, "New Title", "This video is amazing!!!!!", "Vantu" ));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.c, "New Title", "This video is amazing!!!!!" , "Vantu"));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.d, "New Title", "This video is amazing!!!!!", "Vantu" ));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.e, "New Title", "This video is amazing!!!!!", "Vantu" ));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.f, "New Title", "This video is amazing!!!!!", "Vantu" ));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.g, "New Title", "This video is amazing!!!!!", "Vantu" ));
-        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.h, "New Title", "This video is amazing!!!!!", "Vantu" ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.a, "Chill yeah <3 !!!", "This video is amazing!!!!!", "adventure", R.drawable.avatar1));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.b, "Art work!!!!!", "Art pink style <3", "singulie", R.drawable.avata ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.c, "Wow amazing!!", "This record is amazing!!!!!" , "hieule", R.drawable.avatar2 ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.d, "Travel to Japan!!!", "This video is amazing!!!!!", "tuankiet", R.drawable.avatar3 ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.e, "Haizzzz :)))))", "This video is amazing!!!!!", "vantu", R.drawable.avata ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.f, "Winter is coming!!!", "This video is amazing!!!!!", "tuankiet", R.drawable.a6 ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.g, "Dark", "This video is amazing!!!!!", "hoang", R.drawable.a7 ));
+        videoList.add(new Video("android.resource://" + getPackageName() + "/" + R.raw.h, "Minecraft", "This video is amazing!!!!!", "hay", R.drawable.a8 ));
+
 
         videoAdapter = new VideoAdapter(videoList);
         viewPager2.setAdapter(videoAdapter);
@@ -68,7 +69,7 @@ public class ScrollActivity extends AppCompatActivity {
         // Toggle mute state
         muteBtn.setOnClickListener(v -> {
             isMuted = !isMuted;
-            muteBtn.setImageResource(isMuted ? R.drawable.baseline_volume_off_24 : R.drawable.baseline_volume_down_24);
+            muteBtn.setImageResource(isMuted ? R.drawable.baseline_volume_off_24 : R.drawable.baseline_volume_down_alt_24);
             toggleMute();
         });
     }
@@ -78,3 +79,4 @@ public class ScrollActivity extends AppCompatActivity {
         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, isMuted);
     }
 }
+
