@@ -97,11 +97,11 @@ public class FriendRequestsActivity extends AppCompatActivity {
     private List<FriendRequest> loadFriendRequests() {
         List<FriendRequest> requests = new ArrayList<>();
         requests.add(new FriendRequest("Bảo Vy", 3, R.drawable.avata, "3 ngày"));
-//        requests.add(new FriendRequest("Hương Huỳnh", 1, R.drawable.image2, "1 năm"));
-//        requests.add(new FriendRequest("Hoàng Đức Hạnh", 125, R.drawable.image3, "11 tuần"));
-//        requests.add(new FriendRequest("Emma Diễm", 1, R.drawable.image4, "2 tuần"));
-//        requests.add(new FriendRequest("Huyền Trần", 6, R.drawable.image5, "1 năm"));
-//        requests.add(new FriendRequest("Nguyễn Thị Thùy Duyên", 1, R.drawable.image6, "2 tuần"));
+        requests.add(new FriendRequest("Hương Huỳnh", 1, R.drawable.avata, "1 năm"));
+        requests.add(new FriendRequest("Hoàng Đức Hạnh", 125, R.drawable.avata, "11 tuần"));
+        requests.add(new FriendRequest("Emma Diễm", 1, R.drawable.avata, "2 tuần"));
+        requests.add(new FriendRequest("Huyền Trần", 6, R.drawable.avata, "1 năm"));
+        requests.add(new FriendRequest("Nguyễn Thị Thùy Duyên", 1, R.drawable.avata, "2 tuần"));
         return requests;
     }
 }
