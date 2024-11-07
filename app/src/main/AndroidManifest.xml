@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.POST_OTIFICATIONS" tools:targetApi="33" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" tools:targetApi="33" />
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -38,7 +38,7 @@
         <activity android:name=".Activity.ChatActivity" />
         <activity android:name=".Activity.RegisterActivity" />
         <activity android:name=".Activity.MenuActivity" />
-        <activity android:name=".Activity.FriendRequestsActivity"></activity>
+        <activity android:name=".Activity.FriendRequestsActivity"/>
 
         <!-- Khai báo HomeActivity -->
         <activity

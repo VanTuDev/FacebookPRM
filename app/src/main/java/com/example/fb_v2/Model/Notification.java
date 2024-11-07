@@ -1,14 +1,19 @@
 package com.example.fb_v2.Model;
 
 public class Notification {
-    private String content;
-    private String time;
-    private int profileImageResId;
+    private String userName;    // Tên người dùng
+    private String content;     // Nội dung bài đăng
+    private String time;        // Thời gian đăng
 
-    public Notification(String content, String time, int profileImageResId) {
+    public Notification(String userName, String content, String time) {
+        this.userName = userName;
         this.content = content;
         this.time = time;
-        this.profileImageResId = profileImageResId;
+    }
+
+    // Getter cho các thuộc tính
+    public String getUserName() {
+        return userName;
     }
 
     public String getContent() {
@@ -17,9 +22,5 @@ public class Notification {
 
     public String getTime() {
         return time;
-    }
-
-    public int getProfileImageResId() {
-        return profileImageResId;
     }
 }
