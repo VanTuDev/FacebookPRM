@@ -40,6 +40,9 @@ public class MenuActivity extends AppCompatActivity {
             if ("Bạn bè".equals(item.getName())) {  // Check if the "Friends" item was clicked
                 Intent intent = new Intent(MenuActivity.this, FriendRequestsActivity.class);
                 startActivity(intent);
+            } else if ("Profile".equals(item.getName())) {  // Check if the "Profile" item was clicked
+                Intent intent = new Intent(MenuActivity.this, ProfileActivity.class);
+                startActivity(intent);
             }
             // Add more cases if other menu items need special handling
         });
@@ -58,6 +61,7 @@ public class MenuActivity extends AppCompatActivity {
         items.add(new MenuItems("Tin nhắn", R.drawable.ic_messenger));
         items.add(new MenuItems("Bạn bè", R.drawable.ic_friends)); // "Friends" item
         items.add(new MenuItems("Video", R.drawable.ic_video));
+        items.add(new MenuItems("Profile", R.drawable.ic_profile));
         // Add more items as per your design
         return items;
     }

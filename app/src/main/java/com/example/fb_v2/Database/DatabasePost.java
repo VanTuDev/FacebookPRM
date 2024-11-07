@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.fb_v2.Model.Post;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabasePost extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "posts.db";
@@ -65,4 +70,27 @@ public class DatabasePost extends SQLiteOpenHelper {
         db.close();
         return result > 0;
     }
+
+    public List<Post> getUserPosts(String userName) {
+        List<Post> posts = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, null, "user_name = ?", new String[]{userName}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                // Sử dụng "_id" thay vì "id"
+                int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
+                String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
+                String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
+                int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
+                int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
+
+                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return posts;
+    }
+
 }
