@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FB_V2</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyA0jqrEKrz5eSQW2VsIEPJRog4jgNR0b4c</string>
 </resources>

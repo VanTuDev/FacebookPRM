@@ -49,26 +49,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.postImage.setVisibility(View.GONE); // Hide ImageView if there's no image
         }
 
-        // Set màu của likeIcon dựa trên trạng thái isLiked
-        if (post.isLiked) {
-            holder.likeIcon.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
-        } else {
-            holder.likeIcon.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
-        }
 
-        // Cập nhật likeCount khi nhấn vào likeIcon
-        holder.likeIcon.setOnClickListener(v -> {
-            if (post.isLiked) {
-                post.isLiked = false;
-                post.likeCount--; // Giảm likeCount
-                holder.likeIcon.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
-            } else {
-                post.isLiked = true;
-                post.likeCount++; // Tăng likeCount
-                holder.likeIcon.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), R.color.red));
-            }
-            holder.likeCount.setText(post.likeCount + " likes");
-        });
     }
 
     @Override
