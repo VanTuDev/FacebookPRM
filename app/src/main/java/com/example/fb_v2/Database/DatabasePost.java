@@ -50,11 +50,19 @@ public class DatabasePost extends SQLiteOpenHelper {
         values.put(COLUMN_IMAGE_URI, imageUri);
 
         long result = db.insert(TABLE_NAME, null, values);
+        db.close();
         return result != -1;  // returns true if insert is successful
     }
 
     public Cursor getAllPosts() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_NAME, null, null, null, null, null, null);
+    }
+
+    public boolean deletePost(int postId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_NAME, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
+        db.close();
+        return result > 0;
     }
 }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="#121212"
     android:fillViewport="true"
-    android:scrollbars="none"> <!-- Hide the scrollbar -->
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,16 +14,16 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Single Post Layout (with reduced bottom margin) -->
+        <!-- Single Post Layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:background="#333334"
             android:orientation="vertical"
-            android:padding="16dp"> <!-- Reduced spacing between posts -->
+            android:padding="16dp">
 
-            <!-- Post Header (User profile and name) -->
+            <!-- Post Header (User profile, name, and delete icon) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,10 +44,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:layout_weight="1"
                     android:text="User Name"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
                     android:textStyle="bold" />
+
+                <!-- Delete Icon -->
+                <ImageView
+                    android:id="@+id/deleteIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="Delete Icon"
+                    android:src="@drawable/ic_delete"
+                    app:tint="#FFFFFF" />
             </LinearLayout>
 
             <!-- Post Text Content -->

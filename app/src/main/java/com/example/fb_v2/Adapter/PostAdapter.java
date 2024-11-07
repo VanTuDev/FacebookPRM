@@ -1,16 +1,18 @@
 package com.example.fb_v2.Adapter;
 
+import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.fb_v2.Activity.HomeActivity;
 import com.example.fb_v2.Model.Post;
 import com.example.fb_v2.R;
 
@@ -49,7 +51,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.postImage.setVisibility(View.GONE); // Hide ImageView if there's no image
         }
 
-
+        // Xử lý sự kiện xóa bài đăng
+        holder.deleteIcon.setOnClickListener(v -> {
+            new AlertDialog.Builder(holder.itemView.getContext())
+                    .setTitle("Xóa bài đăng")
+                    .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        ((HomeActivity) holder.itemView.getContext()).deletePost(post.getId());
+                        postList.remove(position);
+                        notifyItemRemoved(position);
+                        Toast.makeText(holder.itemView.getContext(), "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
     }
 
     @Override
@@ -60,7 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     static class PostViewHolder extends RecyclerView.ViewHolder {
 
         TextView postUserName, postText, likeCount, commentCount;
-        ImageView postImage, likeIcon;
+        ImageView postImage, likeIcon, deleteIcon;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,6 +85,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likeIcon = itemView.findViewById(R.id.likeIcon);
             likeCount = itemView.findViewById(R.id.likeCount);
             commentCount = itemView.findViewById(R.id.commentCount);
+            deleteIcon = itemView.findViewById(R.id.deleteIcon); // Tham chiếu deleteIcon đúng
         }
     }
 }

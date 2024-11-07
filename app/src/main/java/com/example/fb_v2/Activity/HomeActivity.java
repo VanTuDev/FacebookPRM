@@ -118,8 +118,6 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.navigation_video) {
                 // Handle video action
-                Intent intent = new Intent(HomeActivity.this, ScrollActivity.class);
-                startActivity(intent);
                 return true;
             } else if (itemId == R.id.navigation_friends) {
                 // Navigate to FriendRequestsActivity
@@ -300,17 +298,19 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
     }
 
-    // Sample method to load notifications
-    private List<String> loadNotifications() {
-        List<String> notifications = new ArrayList<>();
-        List<Notification> notificationList = databaseNotification.getAllNotifications();
-
-        for (Notification notification : notificationList) {
-            String displayText = notification.getContent() + " at " + notification.getTime();
-            notifications.add(displayText);
-        }
-
-        return notifications;
+    public void deletePost(int postId) {
+        executorService.execute(() -> {
+            boolean isDeleted = databasePost.deletePost(postId);
+            runOnUiThread(() -> {
+                if (isDeleted) {
+                    Toast.makeText(this, "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
+                    postList = loadPosts(); // Load lại danh sách bài đăng sau khi xóa
+                    postAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(this, "Xóa bài đăng không thành công", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
 
