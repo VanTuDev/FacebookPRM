@@ -44,6 +44,10 @@ public class MenuActivity extends AppCompatActivity {
                 Intent intent = new Intent(MenuActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
+            else if ("Add Friend".equals(item.getName())) {
+                Intent intent = new Intent(MenuActivity.this, ProfileActivity.class); // TODO thêm class tương ứng
+                startActivity(intent);
+            }
             // Add more cases if other menu items need special handling
         });
 
@@ -62,6 +66,7 @@ public class MenuActivity extends AppCompatActivity {
         items.add(new MenuItems("Bạn bè", R.drawable.ic_friends)); // "Friends" item
         items.add(new MenuItems("Video", R.drawable.ic_video));
         items.add(new MenuItems("Profile", R.drawable.ic_profile));
+        items.add(new MenuItems("Add Friend", R.drawable.ic_friends));
         // Add more items as per your design
         return items;
     }

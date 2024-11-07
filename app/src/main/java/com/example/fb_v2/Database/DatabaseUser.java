@@ -28,7 +28,7 @@ public class DatabaseUser extends SQLiteOpenHelper {
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME + " TEXT, "
                 + COLUMN_PASSWORD + " TEXT, "
-                + COLUMN_PROFILE_IMAGE + " INTEGER" + ")";
+                + COLUMN_PROFILE_IMAGE + " TEXT" + ")"; // Change to TEXT for storing URI as a string
         db.execSQL(CREATE_USER_TABLE);
     }
 
@@ -65,23 +65,54 @@ public class DatabaseUser extends SQLiteOpenHelper {
     }
 
     // Method to get the profile image of a user by name
-    public int getUserProfileImage(String name) {
+    // DatabaseUser.java
+    public String getUserProfileImage(String userName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_USER, new String[]{COLUMN_PROFILE_IMAGE}, COLUMN_NAME + " = ?", new String[]{name}, null, null, null);
+        Cursor cursor = db.query(TABLE_USER, new String[]{COLUMN_PROFILE_IMAGE}, COLUMN_NAME + " = ?", new String[]{userName}, null, null, null);
 
-        int profileImage = R.drawable.ic_profile; // Default profile image if no data found
+        String profileImageUri = null; // Default to null
         if (cursor != null && cursor.moveToFirst()) {
             int columnIndex = cursor.getColumnIndex(COLUMN_PROFILE_IMAGE);
-
             if (columnIndex != -1) {
-                profileImage = cursor.getInt(columnIndex);
-            } else {
-                // Log hoặc xử lý nếu cần, ví dụ: Log.e("DatabaseUser", "COLUMN_PROFILE_IMAGE not found");
+                profileImageUri = cursor.getString(columnIndex);
             }
             cursor.close();
         }
         db.close();
-        return profileImage;
+
+        // Nếu profileImageUri vẫn là null, trả về URI mặc định cho ảnh đại diện
+        return profileImageUri != null ? profileImageUri : String.valueOf(R.drawable.avata);
+    }
+
+
+    public boolean updateUserProfile(String userName, String newUserName, String newProfileImageUri) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, newUserName);
+        values.put(COLUMN_PROFILE_IMAGE, newProfileImageUri);
+
+        int rowsAffected = db.update(TABLE_USER, values, COLUMN_NAME + " = ?", new String[]{userName});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    public boolean updateUserName(String oldUserName, String newUserName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, newUserName);
+
+        int rowsAffected = db.update(TABLE_USER, values, COLUMN_NAME + " = ?", new String[]{oldUserName});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    public boolean isUserNameExists(String userName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USER, new String[]{COLUMN_NAME}, COLUMN_NAME + " = ?", new String[]{userName}, null, null, null);
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        db.close();
+        return exists;
     }
 
 }

@@ -93,4 +93,15 @@ public class DatabasePost extends SQLiteOpenHelper {
         return posts;
     }
 
+    // DatabasePost.java
+    public boolean updateUserNameInPosts(String oldUserName, String newUserName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_name", newUserName);
+        int rowsAffected = db.update(TABLE_NAME, values, "user_name = ?", new String[]{oldUserName});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+
 }
