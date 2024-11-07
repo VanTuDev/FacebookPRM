@@ -112,7 +112,9 @@ public class HomeActivity extends AppCompatActivity {
                 // Handle video action
                 return true;
             } else if (itemId == R.id.navigation_friends) {
-                // Handle friends action
+                // Navigate to FriendRequestsActivity
+                Intent intent = new Intent(HomeActivity.this, FriendRequestsActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.navigation_notifications) {
                 showNotificationDialog();

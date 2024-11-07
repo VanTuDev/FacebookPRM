@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#212121">
+
+    <!-- Top Bar with Title and Search Icon -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#1C1C1E"
+        android:padding="12dp">
+
+        <!-- Title TextView -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Bạn bè"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Search Icon -->
+        <ImageView
+            android:id="@+id/searchIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search"
+            android:contentDescription="Search Icon"
+            android:padding="8dp"
+            app:tint="#FFFFFF" />
+    </LinearLayout>
+
+    <!-- Search Bar (EditText) initially hidden -->
+    <EditText
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topBar"
+        android:layout_margin="8dp"
+        android:hint="Tìm kiếm bạn bè..."
+        android:padding="8dp"
+        android:background="@drawable/search_bar_background"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:visibility="gone" />
+
+    <!-- RecyclerView for friend requests -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFriendRequests"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/searchBar"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="8dp"
+        android:padding="8dp" />
+</RelativeLayout>
