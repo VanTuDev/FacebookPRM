@@ -4,13 +4,13 @@ package com.example.fb_v2.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fb_v2.Adapter.MenuAdapter;
-import com.example.fb_v2.Model.MenuItems;
 import com.example.fb_v2.Model.MenuItems;
 import com.example.fb_v2.R;
 
@@ -23,6 +23,7 @@ public class MenuActivity extends AppCompatActivity {
     private MenuAdapter menuAdapter;
     private List<MenuItems> menuItemList;
     private ImageView back;
+    private Button signOutButton; // Sign Out button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,19 @@ public class MenuActivity extends AppCompatActivity {
                 Intent intent = new Intent(MenuActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish(); // Optional: close MenuActivity so it won’t stay in the back stack
+            }
+        });
+
+        // Initialize and set click listener for Sign Out button
+        signOutButton = findViewById(R.id.signOutButton);
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Intent to go back to MainActivity for re-login
+                Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
         });
     }
