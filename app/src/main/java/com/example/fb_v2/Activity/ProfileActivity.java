@@ -156,4 +156,7 @@ public class ProfileActivity extends AppCompatActivity implements UserPostsAdapt
         userPostsList.addAll(databasePost.getUserPosts(currentUser));
         userPostsAdapter.notifyDataSetChanged();
     }
+
 }
+
+

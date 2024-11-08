@@ -117,7 +117,8 @@ public class HomeActivity extends AppCompatActivity {
                 // Already on Home, handle accordingly
                 return true;
             } else if (itemId == R.id.navigation_video) {
-                // Handle video action
+                Intent intent = new Intent(HomeActivity.this, ScrollActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.navigation_friends) {
                 // Navigate to FriendRequestsActivity
@@ -164,6 +165,7 @@ public class HomeActivity extends AppCompatActivity {
                         if (isInserted) {
                             Toast.makeText(this, "Status posted!", Toast.LENGTH_SHORT).show();
                             postList.add(new Post(currentUser, statusText, imageUriString, 0, 0));
+
                             postAdapter.notifyDataSetChanged();
                             dialog.dismiss();
 
@@ -298,20 +300,22 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void deletePost(int postId) {
+    public void deletePost(int postId, int position) {
         executorService.execute(() -> {
             boolean isDeleted = databasePost.deletePost(postId);
             runOnUiThread(() -> {
                 if (isDeleted) {
-                    Toast.makeText(this, "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
-                    postList = loadPosts(); // Load lại danh sách bài đăng sau khi xóa
-                    postAdapter.notifyDataSetChanged();
+                    Toast.makeText(this, "Post deleted", Toast.LENGTH_SHORT).show();
+                    postList.remove(position);  // Remove post from the list
+                    postAdapter.notifyItemRemoved(position);  // Notify adapter of item removal
                 } else {
-                    Toast.makeText(this, "Xóa bài đăng không thành công", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Failed to delete post", Toast.LENGTH_SHORT).show();
                 }
             });
         });
     }
+
+
 
 
 }

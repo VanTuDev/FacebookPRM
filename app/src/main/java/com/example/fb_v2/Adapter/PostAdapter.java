@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.fb_v2.Activity.HomeActivity;
+import com.example.fb_v2.Database.DatabasePost;
 import com.example.fb_v2.Model.Post;
 import com.example.fb_v2.R;
 
@@ -36,33 +37,43 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.postUserName.setText(post.userName);
-        holder.postText.setText(post.content);
-        holder.likeCount.setText(post.likeCount + " likes");
-        holder.commentCount.setText(post.commentCount + " comments");
+        holder.postUserName.setText(post.getUserName());
+        holder.postText.setText(post.getContent());
+        holder.likeCount.setText(post.getLikeCount() + " likes");
+        holder.commentCount.setText(post.getCommentCount() + " comments");
 
-        // Load image from URI using Glide
-        if (post.imageUri != null && !post.imageUri.isEmpty()) {
+        holder.likeIcon.setImageResource(post.isLiked() ? R.drawable.ic_liked : R.drawable.ic_unliked);
+
+        holder.likeIcon.setOnClickListener(v -> {
+            post.toggleLike();
+            holder.likeCount.setText(post.getLikeCount() + " likes");  // Cập nhật ngay lập tức trên UI
+
+            DatabasePost db = new DatabasePost(holder.itemView.getContext());
+            boolean result = db.toggleLike(post.getId(), post.isLiked(), post.getLikeCount());  // Cập nhật trạng thái Like trong database
+
+            Toast.makeText(holder.itemView.getContext(),
+                    post.isLiked() ? "Liked" : "Unliked", Toast.LENGTH_SHORT).show();
+        });
+
+        if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(post.imageUri)
-                    .placeholder(R.drawable.ic_person_placeholder) // Optional placeholder image
+                    .load(post.getImageUri())
+                    .placeholder(R.drawable.ic_person_placeholder)
                     .into(holder.postImage);
         } else {
-            holder.postImage.setVisibility(View.GONE); // Hide ImageView if there's no image
+            holder.postImage.setVisibility(View.GONE);
         }
 
-        // Xử lý sự kiện xóa bài đăng
         holder.deleteIcon.setOnClickListener(v -> {
             new AlertDialog.Builder(holder.itemView.getContext())
-                    .setTitle("Xóa bài đăng")
-                    .setMessage("Bạn có chắc chắn muốn xóa bài đăng này không?")
-                    .setPositiveButton("Xóa", (dialog, which) -> {
-                        ((HomeActivity) holder.itemView.getContext()).deletePost(post.getId());
-                        postList.remove(position);
-                        notifyItemRemoved(position);
-                        Toast.makeText(holder.itemView.getContext(), "Đã xóa bài đăng", Toast.LENGTH_SHORT).show();
+                    .setTitle("Delete Post")
+                    .setMessage("Are you sure you want to delete this post?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        if (holder.itemView.getContext() instanceof HomeActivity) {
+                            ((HomeActivity) holder.itemView.getContext()).deletePost(post.getId(), position);
+                        }
                     })
-                    .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .show();
         });
     }
@@ -88,4 +99,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             deleteIcon = itemView.findViewById(R.id.deleteIcon); // Tham chiếu deleteIcon đúng
         }
     }
+
+
 }

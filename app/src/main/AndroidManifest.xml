@@ -45,6 +45,7 @@
             android:theme="@style/FullScreen"
             android:exported="false" />
 
+
         <activity
             android:name=".Activity.MapsActivity"
             android:exported="true" />

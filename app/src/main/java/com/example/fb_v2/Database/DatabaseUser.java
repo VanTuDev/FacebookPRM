@@ -114,5 +114,5 @@ public class DatabaseUser extends SQLiteOpenHelper {
         db.close();
         return exists;
     }
-
 }
+

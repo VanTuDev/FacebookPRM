@@ -79,4 +79,3 @@ public class ScrollActivity extends AppCompatActivity {
         audioManager.setStreamMute(AudioManager.STREAM_MUSIC, isMuted);
     }
 }
-

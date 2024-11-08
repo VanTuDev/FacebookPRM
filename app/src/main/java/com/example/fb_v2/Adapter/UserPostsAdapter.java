@@ -42,15 +42,15 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.User
     @Override
     public void onBindViewHolder(@NonNull UserPostViewHolder holder, int position) {
         Post post = userPostsList.get(position);
-        holder.postUserName.setText(post.userName);
-        holder.postText.setText(post.content);
-        holder.likeCount.setText(post.likeCount + " likes");
-        holder.commentCount.setText(post.commentCount + " comments");
+        holder.postUserName.setText(post.getUserName());
+        holder.postText.setText(post.getContent());
+        holder.likeCount.setText(post.getLikeCount() + " likes");
+        holder.commentCount.setText(post.getCommentCount() + " comments");
 
         // Load post image if available
-        if (post.imageUri != null && !post.imageUri.isEmpty()) {
+        if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(post.imageUri)
+                    .load(post.getImageUri())
                     .placeholder(R.drawable.ic_person_placeholder)  // Placeholder image
                     .into(holder.postImage);
         } else {
@@ -107,3 +107,4 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.User
         void onPostDeleted();
     }
 }
+
