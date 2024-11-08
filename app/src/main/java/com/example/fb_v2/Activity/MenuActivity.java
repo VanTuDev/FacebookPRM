@@ -2,9 +2,9 @@
 package com.example.fb_v2.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,45 +24,74 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu);
+        setContentView(R.layout.activity_menu); // Gắn layout activity_menu
 
-        // Initialize RecyclerView
+        // Khởi tạo RecyclerView
         menuRecyclerView = findViewById(R.id.menuRecyclerView);
-        menuRecyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // Set 2 columns
+        menuRecyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // Hiển thị dưới dạng lưới với 2 cột
 
-        // Load menu items
+        // Tải dữ liệu cho menu
         menuItemList = loadMenuItems();
         menuAdapter = new MenuAdapter(menuItemList);
         menuRecyclerView.setAdapter(menuAdapter);
 
-        // Set item click listener
+        // Xử lý sự kiện nhấn vào mục menu
         menuAdapter.setOnItemClickListener(item -> {
-            if ("Bạn bè".equals(item.getName())) {  // Check if the "Friends" item was clicked
-                Intent intent = new Intent(MenuActivity.this, FriendRequestsActivity.class);
-                startActivity(intent);
-            } else if ("Profile".equals(item.getName())) {  // Check if the "Profile" item was clicked
-                Intent intent = new Intent(MenuActivity.this, ProfileActivity.class);
-                startActivity(intent);
+            switch (item.getName()) {
+                case "Bạn bè":
+                    startActivity(new Intent(MenuActivity.this, FriendRequestsActivity.class));
+                    break;
+
+                case "Profile":
+                case "Add Friend": // Dẫn đến ProfileActivity cho cả hai
+                    startActivity(new Intent(MenuActivity.this, ProfileActivity.class));
+                    break;
+
+                case "Đăng xuất":
+                    handleLogout();
+                    break;
+
+                case "Nghe nhạc":
+                    startActivity(new Intent(MenuActivity.this, MusicActivity.class));
+                    break;
+
+                default:
+                    // Xử lý các mục khác nếu có
+                    break;
             }
-            // Add more cases if other menu items need special handling
         });
 
-        // Initialize and set click listener for back button
+        // Khởi tạo và gán sự kiện cho nút quay lại
         back = findViewById(R.id.back);
         back.setOnClickListener(v -> {
             Intent intent = new Intent(MenuActivity.this, HomeActivity.class);
             startActivity(intent);
-            finish(); // Optional: close MenuActivity so it won’t stay in the back stack
+            finish(); // Đóng MenuActivity để không còn trong stack quay lại
         });
     }
 
+    // Hàm để tải danh sách các mục menu
     private List<MenuItems> loadMenuItems() {
         List<MenuItems> items = new ArrayList<>();
         items.add(new MenuItems("Tin nhắn", R.drawable.ic_messenger));
-        items.add(new MenuItems("Bạn bè", R.drawable.ic_friends)); // "Friends" item
+        items.add(new MenuItems("Bạn bè", R.drawable.ic_friends));
         items.add(new MenuItems("Video", R.drawable.ic_video));
         items.add(new MenuItems("Profile", R.drawable.ic_profile));
-        // Add more items as per your design
+        items.add(new MenuItems("Add Friend", R.drawable.ic_friends));
+        items.add(new MenuItems("Đăng xuất", R.drawable.ic_messenger));
+        items.add(new MenuItems("Nghe nhạc", R.drawable.ic_music));
         return items;
+    }
+
+    // Xử lý đăng xuất
+    private void handleLogout() {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("is_logged_in", false);
+        editor.apply();
+
+        Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish(); // Đóng MenuActivity để quay lại MainActivity sau khi đăng xuất
     }
 }

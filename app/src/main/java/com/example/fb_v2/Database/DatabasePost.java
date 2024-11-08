@@ -50,13 +50,13 @@ public class DatabasePost extends SQLiteOpenHelper {
         }
     }
 
-    public boolean toggleLike(int postId, boolean isLiked) {
+    public boolean toggleLike(int postId, boolean isLiked, int currentLikeCount) {
         SQLiteDatabase db = null;
         try {
             db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put(COLUMN_IS_LIKED, isLiked ? 1 : 0);
-            values.put(COLUMN_LIKE_COUNT, isLiked ? 1 : -1);  // Increment/decrement count based on `isLiked`
+            values.put(COLUMN_IS_LIKED, isLiked ? 1 : 0);  // Lưu trạng thái Like
+            values.put(COLUMN_LIKE_COUNT, currentLikeCount);  // Lưu số lượng Like hiện tại
 
             int result = db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
             return result > 0;
@@ -69,6 +69,9 @@ public class DatabasePost extends SQLiteOpenHelper {
             }
         }
     }
+
+
+
 
 
 
@@ -139,12 +142,22 @@ public class DatabasePost extends SQLiteOpenHelper {
         return posts;
     }
 
+
     public void updateCommentCount(int postId, int newCommentCount) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_COMMENT_COUNT, newCommentCount);
         db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
         db.close();
+
+    public boolean updateUserNameInPosts(String oldUserName, String newUserName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("user_name", newUserName);
+        int rowsAffected = db.update(TABLE_NAME, values, "user_name = ?", new String[]{oldUserName});
+        db.close();
+        return rowsAffected > 0;
+
     }
 
 
