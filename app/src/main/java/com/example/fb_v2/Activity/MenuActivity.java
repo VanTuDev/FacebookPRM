@@ -44,8 +44,10 @@ public class MenuActivity extends AppCompatActivity {
             } else if ("Profile".equals(item.getName())) {  // Check if the "Profile" item was clicked
                 Intent intent = new Intent(MenuActivity.this, ProfileActivity.class);
                 startActivity(intent);
-            }
-            else if ("Đăng xuất".equals(item.getName())) {
+            }else if ("Add Friend".equals(item.getName())) {
+                Intent intent = new Intent(MenuActivity.this, ProfileActivity.class); // TODO thêm class tương ứng
+                startActivity(intent);
+            }else if ("Đăng xuất".equals(item.getName())) {
                 // Cập nhật trạng thái đăng xuất trong SharedPreferences
                 SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -75,6 +77,7 @@ public class MenuActivity extends AppCompatActivity {
         items.add(new MenuItems("Bạn bè", R.drawable.ic_friends)); // "Friends" item
         items.add(new MenuItems("Video", R.drawable.ic_video));
         items.add(new MenuItems("Profile", R.drawable.ic_profile));
+        items.add(new MenuItems("Add Friend", R.drawable.ic_friends));
         items.add(new MenuItems("Đăng xuất", R.drawable.ic_messenger));
         // Add more items as per your design
         return items;

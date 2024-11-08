@@ -26,13 +26,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private DatabaseUser db;
 
-    private void saveCurrentUser(String username, int profileImage) {
+    private void saveCurrentUser(String username, String profileImageUri) {
         SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("current_user", username);
-        editor.putInt("profile_image", profileImage); // Lưu hình ảnh người dùng
+        editor.putString("profile_image", profileImageUri); // Lưu dưới dạng String
         editor.apply();
     }
+
 
 
     @Override
@@ -71,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
             if (usernameText.isEmpty() || passwordText.isEmpty()) {
                 showSnackbar(v, "Bạn phải nhập đầy đủ vào", toastError);
             } else if (db.checkUser(usernameText, passwordText)) {
-                int profileImage = db.getUserProfileImage(usernameText); // Lấy hình ảnh người dùng từ cơ sở dữ liệu
-                saveCurrentUser(usernameText, profileImage);  // Lưu cả tên và hình ảnh người dùng
+                // Trong phần xử lý đăng nhập:
+                String profileImageUri = db.getUserProfileImage(usernameText);
+                saveCurrentUser(usernameText, profileImageUri);
+                // Lưu cả tên và hình ảnh người dùng
 
                 showSnackbar(v, "Đăng nhập thành công", toastDone);
                 new Handler().postDelayed(() -> {
