@@ -37,34 +37,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.postUserName.setText(post.userName);
-        holder.postText.setText(post.content);
-        holder.likeCount.setText(post.likeCount + " likes");
-        holder.commentCount.setText(post.commentCount + " comments");
+        holder.postUserName.setText(post.getUserName());
+        holder.postText.setText(post.getContent());
+        holder.likeCount.setText(post.getLikeCount() + " likes");
+        holder.commentCount.setText(post.getCommentCount() + " comments");
 
-        holder.likeIcon.setImageResource(post.isLiked ? R.drawable.ic_liked : R.drawable.ic_unliked);
+        holder.likeIcon.setImageResource(post.isLiked() ? R.drawable.ic_liked : R.drawable.ic_unliked);
 
         holder.likeIcon.setOnClickListener(v -> {
             post.toggleLike();
-            notifyItemChanged(position);
+            holder.likeCount.setText(post.getLikeCount() + " likes");  // Cập nhật ngay lập tức trên UI
 
             DatabasePost db = new DatabasePost(holder.itemView.getContext());
-            boolean result = db.toggleLike(post.getId(), post.isLiked);
+            boolean result = db.toggleLike(post.getId(), post.isLiked(), post.getLikeCount());  // Cập nhật trạng thái Like trong database
 
             Toast.makeText(holder.itemView.getContext(),
-                    post.isLiked ? "Liked" : "Unliked", Toast.LENGTH_SHORT).show();
+                    post.isLiked() ? "Liked" : "Unliked", Toast.LENGTH_SHORT).show();
         });
 
-        if (post.imageUri != null && !post.imageUri.isEmpty()) {
+        if (post.getImageUri() != null && !post.getImageUri().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(post.imageUri)
+                    .load(post.getImageUri())
                     .placeholder(R.drawable.ic_person_placeholder)
                     .into(holder.postImage);
         } else {
             holder.postImage.setVisibility(View.GONE);
         }
 
-        // Delete button click listener
         holder.deleteIcon.setOnClickListener(v -> {
             new AlertDialog.Builder(holder.itemView.getContext())
                     .setTitle("Delete Post")
@@ -77,21 +76,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                     .show();
         });
-
-
-
-
-
-        if (post.imageUri != null && !post.imageUri.isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(post.imageUri)
-                    .placeholder(R.drawable.ic_person_placeholder)
-                    .into(holder.postImage);
-        } else {
-            holder.postImage.setVisibility(View.GONE);
-        }
     }
-
 
     @Override
     public int getItemCount() {

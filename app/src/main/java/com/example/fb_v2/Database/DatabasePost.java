@@ -1,5 +1,6 @@
 package com.example.fb_v2.Database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -49,13 +50,13 @@ public class DatabasePost extends SQLiteOpenHelper {
         }
     }
 
-    public boolean toggleLike(int postId, boolean isLiked) {
+    public boolean toggleLike(int postId, boolean isLiked, int currentLikeCount) {
         SQLiteDatabase db = null;
         try {
             db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put(COLUMN_IS_LIKED, isLiked ? 1 : 0);
-            values.put(COLUMN_LIKE_COUNT, isLiked ? 1 : -1);  // Increment/decrement count based on `isLiked`
+            values.put(COLUMN_IS_LIKED, isLiked ? 1 : 0);  // Lưu trạng thái Like
+            values.put(COLUMN_LIKE_COUNT, currentLikeCount);  // Lưu số lượng Like hiện tại
 
             int result = db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
             return result > 0;
@@ -68,6 +69,9 @@ public class DatabasePost extends SQLiteOpenHelper {
             }
         }
     }
+
+
+
 
 
 
@@ -102,15 +106,14 @@ public class DatabasePost extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                @SuppressLint("Range") int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
+                @SuppressLint("Range") String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
+                @SuppressLint("Range") String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
+                @SuppressLint("Range") int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
+                @SuppressLint("Range") int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
+                @SuppressLint("Range") boolean isLiked = cursor.getColumnIndex("is_liked") != -1 && cursor.getInt(cursor.getColumnIndex("is_liked")) == 1;
 
-                // Sử dụng "_id" thay vì "id"
-                int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
-                String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
-                String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
-                int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
-                int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
-                boolean isLiked = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_LIKED)) == 1;
-                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount));
+                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount, isLiked));
 
             } while (cursor.moveToNext());
             cursor.close();
@@ -118,5 +121,7 @@ public class DatabasePost extends SQLiteOpenHelper {
         db.close();
         return posts;
     }
+
+
 }
 

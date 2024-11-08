@@ -2,6 +2,7 @@
 package com.example.fb_v2.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -44,6 +45,18 @@ public class MenuActivity extends AppCompatActivity {
                 Intent intent = new Intent(MenuActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
+            else if ("Đăng xuất".equals(item.getName())) {
+                // Cập nhật trạng thái đăng xuất trong SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("is_logged_in", false);  // Đánh dấu người dùng đã đăng xuất
+                editor.apply();
+
+                // Chuyển về màn hình đăng nhập
+                Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();  // Đóng MenuActivity để không còn trong back stack
+            }
             // Add more cases if other menu items need special handling
         });
 
@@ -62,6 +75,7 @@ public class MenuActivity extends AppCompatActivity {
         items.add(new MenuItems("Bạn bè", R.drawable.ic_friends)); // "Friends" item
         items.add(new MenuItems("Video", R.drawable.ic_video));
         items.add(new MenuItems("Profile", R.drawable.ic_profile));
+        items.add(new MenuItems("Đăng xuất", R.drawable.ic_messenger));
         // Add more items as per your design
         return items;
     }
