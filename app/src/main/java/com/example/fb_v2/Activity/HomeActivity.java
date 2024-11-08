@@ -40,8 +40,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.example.fb_v2.Adapter.NotificationAdapter;
 import com.example.fb_v2.Adapter.PostAdapter;
+import com.example.fb_v2.Adapter.CommentAdapter;
+import com.example.fb_v2.Database.DatabaseComment;
 import com.example.fb_v2.Database.DatabaseNotification;
 import com.example.fb_v2.Database.DatabasePost;
+import com.example.fb_v2.Model.Comment;
 import com.example.fb_v2.Model.Notification;
 import com.example.fb_v2.Model.Post;
 import com.example.fb_v2.R;
@@ -60,6 +63,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private DatabasePost databasePost;
     private DatabaseNotification databaseNotification;
+    private DatabaseComment databaseComment;
     private RecyclerView postsRecyclerView;
     private PostAdapter postAdapter;
     private List<Post> postList;
@@ -82,12 +86,13 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize the database helper
         databasePost = new DatabasePost(this);
         databaseNotification = new DatabaseNotification(this);
+        databaseComment = new DatabaseComment(this);
 
         // Initialize RecyclerView for posts
         postsRecyclerView = findViewById(R.id.postsRecyclerView);
         postsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         postList = loadPosts();
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(postList, this::showCommentDialog);
         postsRecyclerView.setAdapter(postAdapter);
 
         LinearLayout statusUpdateSection = findViewById(R.id.statusUpdateSection);
@@ -137,6 +142,65 @@ public class HomeActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    private List<Post> loadPosts() {
+        return databasePost.getAllPosts();  // Load posts from database
+    }
+
+    public void showCommentDialog(Post post) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_comment); // Ensure this layout exists with proper IDs
+
+        RecyclerView commentsRecyclerView = dialog.findViewById(R.id.commentsRecyclerView);
+        EditText commentEditText = dialog.findViewById(R.id.commentEditText);
+        Button postCommentButton = dialog.findViewById(R.id.postCommentButton);
+
+        List<Comment> commentList = databaseComment.getCommentsByPostId(post.getId());
+        CommentAdapter commentAdapter = new CommentAdapter(commentList);
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        commentsRecyclerView.setAdapter(commentAdapter);
+
+        postCommentButton.setOnClickListener(v -> {
+            String commentText = commentEditText.getText().toString().trim();
+            if (!commentText.isEmpty()) {
+                String userName = getCurrentUserName();  // Replace with the actual current user's name
+                String timestamp = new android.icu.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
+                Comment newComment = new Comment(post.getId(), userName, commentText, timestamp);
+                boolean success = databaseComment.addComment(newComment);
+
+                if (success) {
+                    commentList.add(newComment);
+                    commentAdapter.notifyItemInserted(commentList.size() - 1);
+                    commentEditText.setText("");
+                    Toast.makeText(this, "Đã thêm comment!", Toast.LENGTH_SHORT).show();
+                    post.commentCount += 1;
+                    databasePost.updateCommentCount(post.getId(), post.commentCount);
+                } else {
+                    Toast.makeText(this, "Lỗi thêm comment!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Hãy nhập comment", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+    }
+
+    // Helper method to get current user's name
+    private String getCurrentUserName() {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        return sharedPreferences.getString("current_user", "Guest");
+    }
+
+    // Method to save current user details in shared preferences
+    private void saveCurrentUser(String username, int profileImage) {
+        SharedPreferences sharedPreferences = getSharedPreferences("fb_v2", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("current_user", username);
+        editor.putInt("profile_image", profileImage);
+        editor.apply();
     }
 
     private void showStatusUpdateDialog() {
@@ -213,27 +277,28 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // Method to load posts from database
-    private List<Post> loadPosts() {
-        List<Post> posts = new ArrayList<>();
-        Cursor cursor = databasePost.getAllPosts();
-
-        if (cursor != null && cursor.moveToFirst()) {
-            int userNameIndex = cursor.getColumnIndex(DatabasePost.COLUMN_USER_NAME);
-            int contentIndex = cursor.getColumnIndex(DatabasePost.COLUMN_CONTENT);
-            int imageUriIndex = cursor.getColumnIndex(DatabasePost.COLUMN_IMAGE_URI);
-
-            do {
-                String userName = cursor.getString(userNameIndex);
-                String content = cursor.getString(contentIndex);
-                String imageUri = cursor.getString(imageUriIndex);
-
-                posts.add(new Post(userName, content, imageUri, 0, 0));
-            } while (cursor.moveToNext());
-
-            cursor.close();
-        }
-        return posts;
-    }
+//    private List<Post> loadPosts() {
+//        List<Post> posts = new ArrayList<>();
+//        posts.addAll(databasePost.getAllPosts());
+//        Cursor cursor = databasePost.getAllPosts();
+//
+//        if (cursor != null && cursor.moveToFirst()) {
+//            int userNameIndex = cursor.getColumnIndex(DatabasePost.COLUMN_USER_NAME);
+//            int contentIndex = cursor.getColumnIndex(DatabasePost.COLUMN_CONTENT);
+//            int imageUriIndex = cursor.getColumnIndex(DatabasePost.COLUMN_IMAGE_URI);
+//
+//            do {
+//                String userName = cursor.getString(userNameIndex);
+//                String content = cursor.getString(contentIndex);
+//                String imageUri = cursor.getString(imageUriIndex);
+//
+//                posts.add(new Post(userName, content, imageUri, 0, 0));
+//            } while (cursor.moveToNext());
+//
+//            cursor.close();
+//        }
+//        return posts;
+//    }
 
     @SuppressLint("NotificationPermission")
     private void sendPostNotification(String userName, String content, String imageUri) {
@@ -314,8 +379,4 @@ public class HomeActivity extends AppCompatActivity {
             });
         });
     }
-
-
-
-
 }

@@ -1,0 +1,50 @@
+<!-- dialog_add_comment.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_gravity="center">
+
+    <!-- RecyclerView for displaying comments -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/commentsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="16dp"
+        android:background="#121212"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        android:scrollbars="vertical" />
+
+    <!-- Divider line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DADADA"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Comment input field with rounded corners -->
+    <EditText
+        android:id="@+id/commentEditText"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edittext_background"
+        android:hint="Add a comment..."
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#757575"
+        android:textSize="14sp" />
+
+    <!-- Post comment button with rounded corners -->
+    <Button
+        android:id="@+id/postCommentButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#6200EE"
+        android:text="Post Comment"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+</LinearLayout>

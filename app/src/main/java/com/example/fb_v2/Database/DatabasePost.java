@@ -87,10 +87,30 @@ public class DatabasePost extends SQLiteOpenHelper {
         return result != -1;  // returns true if insert is successful
     }
 
-    public Cursor getAllPosts() {
+    public List<Post> getAllPosts() {
+        List<Post> posts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int userNameIndex = cursor.getColumnIndex(COLUMN_USER_NAME);
+            int contentIndex = cursor.getColumnIndex(COLUMN_CONTENT);
+            int imageUriIndex = cursor.getColumnIndex(COLUMN_IMAGE_URI);
+
+            do {
+                String userName = cursor.getString(userNameIndex);
+                String content = cursor.getString(contentIndex);
+                String imageUri = cursor.getString(imageUriIndex);
+
+                posts.add(new Post(userName, content, imageUri, 0, 0));
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        db.close();
+        return posts;
     }
+
 
     public boolean deletePost(int postId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -122,7 +142,14 @@ public class DatabasePost extends SQLiteOpenHelper {
         return posts;
     }
 
-    // DatabasePost.java
+
+    public void updateCommentCount(int postId, int newCommentCount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_COMMENT_COUNT, newCommentCount);
+        db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
+        db.close();
+
     public boolean updateUserNameInPosts(String oldUserName, String newUserName) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -130,6 +157,7 @@ public class DatabasePost extends SQLiteOpenHelper {
         int rowsAffected = db.update(TABLE_NAME, values, "user_name = ?", new String[]{oldUserName});
         db.close();
         return rowsAffected > 0;
+
     }
 
 
