@@ -6,8 +6,10 @@ public class FriendRequest {
     private int profileImageUrl;
     private String timestamp;
     private boolean isAccepted;
+    private int userId;
 
     public FriendRequest(String name, int mutualFriendsCount, int profileImageUrl, String timestamp) {
+
         this.name = name;
         this.mutualFriendsCount = mutualFriendsCount;
         this.profileImageUrl = profileImageUrl;
@@ -21,4 +23,7 @@ public class FriendRequest {
     public String getTimestamp() { return timestamp; }
     public boolean isAccepted() { return isAccepted; }
     public void setAccepted(boolean accepted) { isAccepted = accepted; }
+    public int getUserId() {
+        return userId;
+    }
 }

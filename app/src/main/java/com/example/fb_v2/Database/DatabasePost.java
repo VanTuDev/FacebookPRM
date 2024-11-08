@@ -1,5 +1,6 @@
 package com.example.fb_v2.Database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -83,10 +84,30 @@ public class DatabasePost extends SQLiteOpenHelper {
         return result != -1;  // returns true if insert is successful
     }
 
-    public Cursor getAllPosts() {
+    public List<Post> getAllPosts() {
+        List<Post> posts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int userNameIndex = cursor.getColumnIndex(COLUMN_USER_NAME);
+            int contentIndex = cursor.getColumnIndex(COLUMN_CONTENT);
+            int imageUriIndex = cursor.getColumnIndex(COLUMN_IMAGE_URI);
+
+            do {
+                String userName = cursor.getString(userNameIndex);
+                String content = cursor.getString(contentIndex);
+                String imageUri = cursor.getString(imageUriIndex);
+
+                posts.add(new Post(userName, content, imageUri, 0, 0));
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+        db.close();
+        return posts;
     }
+
 
     public boolean deletePost(int postId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -102,15 +123,14 @@ public class DatabasePost extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                @SuppressLint("Range") int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
+                @SuppressLint("Range") String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
+                @SuppressLint("Range") String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
+                @SuppressLint("Range") int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
+                @SuppressLint("Range") int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
+                @SuppressLint("Range") boolean isLiked = cursor.getColumnIndex("is_liked") != -1 && cursor.getInt(cursor.getColumnIndex("is_liked")) == 1;
 
-                // Sử dụng "_id" thay vì "id"
-                int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
-                String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
-                String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
-                int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
-                int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
-                boolean isLiked = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_LIKED)) == 1;
-                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount));
+                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount, isLiked));
 
             } while (cursor.moveToNext());
             cursor.close();
@@ -118,5 +138,15 @@ public class DatabasePost extends SQLiteOpenHelper {
         db.close();
         return posts;
     }
+
+    public void updateCommentCount(int postId, int newCommentCount) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_COMMENT_COUNT, newCommentCount);
+        db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
+        db.close();
+    }
+
+
 }
 

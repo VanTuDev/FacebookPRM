@@ -61,7 +61,7 @@ public class FriendRequestAdapter extends RecyclerView.Adapter<FriendRequestAdap
         holder.btnAccept.setOnClickListener(v -> {
             request.setAccepted(true);
             notifyItemChanged(position);
-            Toast.makeText(context, "Friend request accepted for " + request.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Chấp nhận lời mời kết bạn của " + request.getName(), Toast.LENGTH_SHORT).show();
         });
 
         // Handle delete button click
