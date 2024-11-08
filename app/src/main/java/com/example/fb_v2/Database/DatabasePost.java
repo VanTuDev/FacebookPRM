@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.fb_v2.Model.Post;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabasePost extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "posts.db";
@@ -18,7 +23,7 @@ public class DatabasePost extends SQLiteOpenHelper {
     public static final String COLUMN_IMAGE_URI = "image_uri";
     public static final String COLUMN_LIKE_COUNT = "like_count";
     public static final String COLUMN_COMMENT_COUNT = "comment_count";
-
+    public static final String COLUMN_IS_LIKED = "is_liked";
     public DatabasePost(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -31,16 +36,40 @@ public class DatabasePost extends SQLiteOpenHelper {
                 COLUMN_CONTENT + " TEXT, " +
                 COLUMN_IMAGE_URI + " TEXT, " +
                 COLUMN_LIKE_COUNT + " INTEGER DEFAULT 0, " +
-                COLUMN_COMMENT_COUNT + " INTEGER DEFAULT 0" +
+                COLUMN_COMMENT_COUNT + " INTEGER DEFAULT 0, " +
+                COLUMN_IS_LIKED + " INTEGER DEFAULT 0" + // New column for like status
                 ")";
         db.execSQL(CREATE_POSTS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        onCreate(db);
+        if (oldVersion < 2) { // Assuming new version with isLiked is version 2
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COLUMN_IS_LIKED + " INTEGER DEFAULT 0");
+        }
     }
+
+    public boolean toggleLike(int postId, boolean isLiked) {
+        SQLiteDatabase db = null;
+        try {
+            db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_IS_LIKED, isLiked ? 1 : 0);
+            values.put(COLUMN_LIKE_COUNT, isLiked ? 1 : -1);  // Increment/decrement count based on `isLiked`
+
+            int result = db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+        }
+    }
+
+
 
     public boolean insertPost(String userName, String content, String imageUri) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -63,6 +92,30 @@ public class DatabasePost extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int result = db.delete(TABLE_NAME, COLUMN_ID + " = ?", new String[]{String.valueOf(postId)});
         db.close();
-        return result > 0;
+        return result > 0;  // Returns true if deletion was successful
     }
+
+
+    public List<Post> getUserPosts(String userName) {
+        List<Post> posts = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, null, "user_name = ?", new String[]{userName}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String content = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT));
+                String imageUri = cursor.getString(cursor.getColumnIndex(COLUMN_IMAGE_URI));
+                int likeCount = cursor.getInt(cursor.getColumnIndex(COLUMN_LIKE_COUNT));
+                int commentCount = cursor.getInt(cursor.getColumnIndex(COLUMN_COMMENT_COUNT));
+                boolean isLiked = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_LIKED)) == 1;
+
+                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount, isLiked));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        db.close();
+        return posts;
+    }
+
 }
