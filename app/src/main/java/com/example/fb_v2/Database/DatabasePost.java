@@ -95,7 +95,6 @@ public class DatabasePost extends SQLiteOpenHelper {
         return result > 0;  // Returns true if deletion was successful
     }
 
-
     public List<Post> getUserPosts(String userName) {
         List<Post> posts = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -103,19 +102,21 @@ public class DatabasePost extends SQLiteOpenHelper {
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
-                String content = cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT));
-                String imageUri = cursor.getString(cursor.getColumnIndex(COLUMN_IMAGE_URI));
-                int likeCount = cursor.getInt(cursor.getColumnIndex(COLUMN_LIKE_COUNT));
-                int commentCount = cursor.getInt(cursor.getColumnIndex(COLUMN_COMMENT_COUNT));
-                boolean isLiked = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_LIKED)) == 1;
 
-                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount, isLiked));
+                // Sử dụng "_id" thay vì "id"
+                int id = cursor.getColumnIndex("_id") != -1 ? cursor.getInt(cursor.getColumnIndex("_id")) : 0;
+                String content = cursor.getColumnIndex("content") != -1 ? cursor.getString(cursor.getColumnIndex("content")) : "";
+                String imageUri = cursor.getColumnIndex("image_uri") != -1 ? cursor.getString(cursor.getColumnIndex("image_uri")) : null;
+                int likeCount = cursor.getColumnIndex("like_count") != -1 ? cursor.getInt(cursor.getColumnIndex("like_count")) : 0;
+                int commentCount = cursor.getColumnIndex("comment_count") != -1 ? cursor.getInt(cursor.getColumnIndex("comment_count")) : 0;
+                boolean isLiked = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_LIKED)) == 1;
+                posts.add(new Post(id, userName, content, imageUri, likeCount, commentCount));
+
             } while (cursor.moveToNext());
             cursor.close();
         }
         db.close();
         return posts;
     }
-
 }
+
