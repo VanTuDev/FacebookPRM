@@ -71,9 +71,13 @@
 
         <activity
             android:name=".Activity.HomeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Activity.MusicActivity"
             android:exported="true">
 
-            <!-- Optional intent filter for other actions -->
+
+
         </activity>
     </application>
 </manifest>
