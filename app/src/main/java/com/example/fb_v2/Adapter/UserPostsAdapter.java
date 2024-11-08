@@ -107,3 +107,4 @@ public class UserPostsAdapter extends RecyclerView.Adapter<UserPostsAdapter.User
         void onPostDeleted();
     }
 }
+
